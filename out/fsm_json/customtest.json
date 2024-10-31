@@ -1,0 +1,44 @@
+{
+    "regions": [
+        {
+            "name": "redbutton", 
+            "x": 0, "y": 0, "w": -1, "h": -1, 
+            "imageLoc": "./images/redbutton.png"
+        }, 
+        {
+            "name": "greenbutton",
+            "x": 0, "y": 0, "w": -1, "h": -1
+        }
+    ], 
+    "states": [
+        {
+            "name" : "inactive",
+            "transitions" : [
+                {
+                    "onEvent" : {"evtType" : "press", "region" : "redbutton"},
+                    "target" : "active",
+                    "actions" : [
+                        {"act": "clear_image", "region": "redbutton"},
+                        {"act": "set_image", "region": "greenbutton", "param": "./images/greenbutton.png"},
+                        {"act": "print_event", "param": "===>>"}
+                    ]
+                }
+            ] 
+        }, 
+        {
+            "name" : "active",
+            "transitions" : [
+                {
+                    "onEvent" : {"evtType" : "press", "region" : "greenbutton"},
+                    "target" : "inactive",
+                    "actions" : [
+                        {"act": "clear_image", "region": "greenbutton"},
+                        {"act": "set_image", "region": "redbutton", "param": "./images/redbutton.png"},
+                        {"act": "print_event", "param": "===>>"}
+                    ]
+                }
+            ] 
+        }
+
+    ]
+}

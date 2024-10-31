@@ -167,6 +167,9 @@ export class FSM {
     public damage() : void {
             
         // **** YOUR CODE HERE ****
+        if (this._parent) {
+            this._parent.damage(); //eventually gets passed to Root 
+        }
 
     }
 
@@ -182,14 +185,37 @@ export class FSM {
         // walk over all the transitions in all the states to get those bound
             
         // **** YOUR CODE HERE ****
+        for (let s : number = 0; s < this.states.length; s++) {
+            let state = this.states[s];
+
+            for (let t : number = 0; t < state.transitions.length; t++) {
+                let transition = state.transitions[t];
+
+                // bind target state
+                transition.bindTarget(this.states); 
+                // bind region names in event specs 
+                transition.onEvent.bindRegion(this._regions);
+                //bind regions in actions
+                for (let a : number = 0; a < transition.actions.length; a++) {
+                    let action = transition.actions[a];
+                    action.bindRegion(this._regions);
+                }
+            }
+        }
 
         // start state is the first one
             
         // **** YOUR CODE HERE ****
+        this._startState = this.states[0];
+        console.log(this._startState);
 
         // need to link all regions back to this object as their parent
             
         // **** YOUR CODE HERE ****
+        for (let r : number = 0; r < this._regions.length; r++) {
+            let region = this._regions[r];
+            region.parent = this;
+        }
 
     }
     
@@ -200,6 +226,8 @@ export class FSM {
     public reset() {
             
         // **** YOUR CODE HERE ****
+        //set current state to start state? 
+        this._currentState = this._startState;
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -216,6 +244,20 @@ export class FSM {
            
         // **** YOUR CODE HERE ****
 
+        for (let t : number = 0; t < this.currentState.transitions.length; t++) {
+            let transition = this.currentState.transitions[t];
+            //check if transition match event type 
+            if (transition.match(evtType, reg)) {
+                for (let a : number = 0; a < transition.actions.length; a++) {
+                    let action = transition.actions[a];
+                    //execute actions associated with transition 
+                    action.execute(evtType, reg); 
+                }
+                this._currentState = transition.target;
+                //no more transitions considered 
+                return;
+            }
+        }
     }
       
     //-------------------------------------------------------------------

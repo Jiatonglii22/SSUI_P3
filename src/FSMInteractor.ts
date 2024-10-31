@@ -58,6 +58,10 @@ export class FSMInteractor {
     public set x(v : number) {
           
         // **** YOUR CODE HERE ****
+        if (!(v === this._x)) {
+            this._x = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }
 
     // Y position (top) of this object within the parent Root object (and containing 
@@ -67,6 +71,10 @@ export class FSMInteractor {
     public set y(v : number) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._y)) {
+            this._y = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }
 
     // Position treated as a single value
@@ -91,6 +99,11 @@ export class FSMInteractor {
     public set parent(v : Root | undefined) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._parent)) {
+            this.damage();
+            this._parent = v;
+            this.damage();
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 
@@ -111,6 +124,11 @@ export class FSMInteractor {
     public damage() {
            
         // **** YOUR CODE HERE ****
+        if (this._parent) {
+            //pass damage to Root
+            this._parent.damage(); //damage function in Root triggers redraw
+        }
+
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -124,6 +142,13 @@ export class FSMInteractor {
         if (!this.fsm) return;
 
         // **** YOUR CODE HERE ****
+        for (let r : number = 0; r < this.fsm.regions.length; r++) {
+            let region = this.fsm.regions[r];
+            ctx.save();
+            ctx.translate(region.x, region.y);
+            region.draw(ctx, showDebugging);
+            ctx.restore();
+        }
     }   
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -137,13 +162,18 @@ export class FSMInteractor {
     // earlier in the list) so that the region drawn on top of other objects appear
     // before them in the list.
     public pick(localX : number, localY : number) : Region[] {
-        let pickList :Region[] = [];
+        let pickList : Region[] = [];
 
         // if we have no FSM, there is nothing to pick
         if (!this.fsm) return pickList;
            
         // **** YOUR CODE HERE ****
-
+        for (let r : number = 0; r < this.fsm.regions.length; r++) {
+            let region = this.fsm.regions[r];
+            if (region.pick(localX, localY)) {
+                pickList.unshift(region);
+             }
+        }
         return pickList;
     }
 
@@ -152,6 +182,9 @@ export class FSMInteractor {
         
         // **** YOUR CODE HERE ****   
         // You will need some persistent bookkeeping for dispatchRawEvent()
+    
+    //tracks regions from before
+    protected _prevRegions : Region[] = [];
 
     // Dispatch the given "raw" event by translating it into a series of higher-level
     // events which are formulated in terms of the regions of our FSM.  "Raw" events 
@@ -177,6 +210,62 @@ export class FSMInteractor {
         if (this.fsm === undefined) return;
 
         // **** YOUR CODE HERE ****
+
+        //get current list of regions 
+        let curRegion = this.pick(localX, localY); 
+
+        //get which regions are exited -> was inside prev regions and not in current regions
+        let exitRegions = this._prevRegions.filter((region) => !curRegion.includes(region)); 
+
+        //get entered regions -> was not in prev regions but in current regions 
+        let enterRegions = curRegion.filter((region) => !this._prevRegions.includes(region)); 
+
+        //order of event delivery - exit first 
+        for (let r : number = 0; r < exitRegions.length; r++) {
+            let region = exitRegions[r]; 
+            this.fsm.actOnEvent('exit', region); 
+            //console.log("exit");
+        }
+
+        //order of event delivery - enter second 
+        for (let r : number = 0; r < enterRegions.length; r++) {
+            let region = enterRegions[r]; 
+            this.fsm.actOnEvent('enter', region); 
+            //console.log("enter"); 
+        }
+
+        //order of event delivery - press, move_inside, release, release_none 
+        //delivered in reverse drawing order 
+        if (what === 'press') {
+            for (let r : number = 0; r < curRegion.length; r++) {
+                let region = curRegion[r]; 
+                this.fsm.actOnEvent('press', region);
+            }
+            //console.log("press");
+
+        } else if (what === 'move') {
+            for (let r : number = 0; r < curRegion.length; r++) {
+                let region = curRegion[r]; 
+                this.fsm.actOnEvent('move_inside', region);
+                
+            }
+            
+            
+        } else if (what === 'release') {
+            if (curRegion.length > 0 ) {
+                //only dispatch release events if there are current regions to release
+                for (let r : number = 0; r < curRegion.length; r++) {
+                    let region = curRegion[r]; 
+                    this.fsm.actOnEvent('release', region);
+                }
+                //console.log("release");
+            } else {
+                //release none 
+                this.fsm.actOnEvent('release_none'); 
+            }
+        }
+        this._prevRegions = curRegion;
+
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .

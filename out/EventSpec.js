@@ -33,6 +33,18 @@ export class EventSpec {
             return;
         }
         // **** YOUR CODE HERE ****
+        //iterate through regionlist
+        //console.log("this region name is", this._regionName);
+        for (let r = 0; r < regionList.length; r++) {
+            //see if regionName matches 
+            //console.log ("possible regions", regionList[r].name);
+            if (this._regionName === regionList[r].name) {
+                //console.log("founda a match!"); 
+                //if match, assign region object to itself
+                this._region = regionList[r];
+                return;
+            }
+        }
         // we didn't match any region, that's ok for some forms that don't need a region
         if (this.evtType === 'nevermatch')
             return;
@@ -49,7 +61,19 @@ export class EventSpec {
     // our region is undefined and region name is "*", we will match to any region.
     match(evtType, regn) {
         // **** YOUR CODE HERE ****
-        // **** Remove this: just here to get it to compile... ****
+        if (this._evtType === "any") {
+            console.log("matched on any");
+            return true;
+        }
+        if (this._evtType === evtType) {
+            if ((this._region === undefined && this.regionName === "*") || (regn !== undefined && this._region === regn)) {
+                return true;
+            }
+            return false;
+        }
+        if (evtType === "nevermatch") {
+            return false;
+        }
         return false;
     }
     //-------------------------------------------------------------------

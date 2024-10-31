@@ -48,18 +48,34 @@ export class Region {
     get x() { return this._x; }
     set x(v) {
         // **** YOUR CODE HERE ****
+        if (!(v === this._x)) {
+            this._x = v;
+            this.damage(); // want to declare damaged somehow
+        }
     }
     get y() { return this._y; }
     set y(v) {
         // **** YOUR CODE HERE ****
+        if (!(v === this._y)) {
+            this._y = v;
+            this.damage(); // want to declare damaged somehow
+        }
     }
     get w() { return this._w; }
     set w(v) {
         // **** YOUR CODE HERE ****
+        if (!(v === this._w)) {
+            this._w = v;
+            this.damage(); // want to declare damaged somehow
+        }
     }
     get h() { return this._h; }
     set h(v) {
         // **** YOUR CODE HERE ****
+        if (!(v === this._h)) {
+            this._h = v;
+            this.damage(); // want to declare damaged somehow
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
     // Size of this object considered as one value
@@ -77,12 +93,18 @@ export class Region {
     get parent() { return this._parent; }
     set parent(v) {
         // **** YOUR CODE HERE ****
+        if (!(v === this._parent)) {
+            this._parent = v;
+            this.damage(); // want to declare damaged somehow
+        }
     }
     get imageLoc() { return this._imageLoc; }
     set imageLoc(v) {
         if (v !== this._imageLoc) {
             this._imageLoc = v;
             this._startImageLoad();
+            //console.log(this.image);
+            this.damage();
         }
     }
     get loaded() { return this._loaded; }
@@ -104,6 +126,10 @@ export class Region {
     // coordinates of this object) should be considered "inside" or "over" this region.
     pick(localX, localY) {
         // **** YOUR CODE HERE ****
+        if (localX >= this.x && localX <= this.x + this.w &&
+            localY >= this.y && localY <= this.y + this.h) {
+            return true;
+        }
         // **** Remove this, it's just here to make this compile as-is
         return false;
     }
@@ -118,6 +144,7 @@ export class Region {
         // if we have a valid loaded image, draw it
         if (this.loaded && !this.loadError && this.image) {
             // **** YOUR CODE HERE ****
+            ctx.drawImage(this.image, 0, 0);
         }
         //draw a frame indicating the (input) bounding box if requested
         if (showDebugFrame) {
@@ -133,6 +160,9 @@ export class Region {
     // notification to its parent FSM which eventually results in a redraw.
     damage() {
         // **** YOUR CODE HERE ****
+        if (this._parent) {
+            this._parent.damage(); //eventually gets passed to Root
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Asynchronous method to start loading of the image for this region.  This 

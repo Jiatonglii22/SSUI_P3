@@ -89,6 +89,9 @@ export class FSM {
     // 
     damage() {
         // **** YOUR CODE HERE ****
+        if (this._parent) {
+            this._parent.damage(); //eventually gets passed to Root 
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
     // Do connecting and other bookkeeping to initially set up and connect the 
@@ -100,16 +103,39 @@ export class FSM {
         // state, region names in event specs, and region names in actions.
         // walk over all the transitions in all the states to get those bound
         // **** YOUR CODE HERE ****
+        for (let s = 0; s < this.states.length; s++) {
+            let state = this.states[s];
+            for (let t = 0; t < state.transitions.length; t++) {
+                let transition = state.transitions[t];
+                // bind target state
+                transition.bindTarget(this.states);
+                // bind region names in event specs 
+                transition.onEvent.bindRegion(this._regions);
+                //bind regions in actions
+                for (let a = 0; a < transition.actions.length; a++) {
+                    let action = transition.actions[a];
+                    action.bindRegion(this._regions);
+                }
+            }
+        }
         // start state is the first one
         // **** YOUR CODE HERE ****
+        this._startState = this.states[0];
+        console.log(this._startState);
         // need to link all regions back to this object as their parent
         // **** YOUR CODE HERE ****
+        for (let r = 0; r < this._regions.length; r++) {
+            let region = this._regions[r];
+            region.parent = this;
+        }
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Reset the FSM to be in its start state.  Note: this does not reset
     // region images to their original states.
     reset() {
         // **** YOUR CODE HERE ****
+        //set current state to start state? 
+        this._currentState = this._startState;
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
     // Cause the FSM to act on the given event: represented by an event type (see 
@@ -123,6 +149,20 @@ export class FSM {
         if (!this.currentState)
             return;
         // **** YOUR CODE HERE ****
+        for (let t = 0; t < this.currentState.transitions.length; t++) {
+            let transition = this.currentState.transitions[t];
+            //check if transition match event type 
+            if (transition.match(evtType, reg)) {
+                for (let a = 0; a < transition.actions.length; a++) {
+                    let action = transition.actions[a];
+                    //execute actions associated with transition 
+                    action.execute(evtType, reg);
+                }
+                this._currentState = transition.target;
+                //no more transitions considered 
+                return;
+            }
+        }
     }
     //-------------------------------------------------------------------
     // Debugging Support

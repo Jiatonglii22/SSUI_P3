@@ -65,15 +65,30 @@ export class Root {
    
     // Perform of redraw across all our child object using the previously established
     // drawing context object for the HTML canvas object we are associated with.
-    // This begins work by clearing the entire canvas.  The for each child object this 
+    // This begins work by clearing the entire canvas.  Then for each child object this 
     // saves the state of the drawing context, puts it in the child coordinate system,
     // draws the child, and then restors the context.
     protected _redraw() {
         const saveBatching = this._batchingDamage;
         this._batchingDamage = true;
+        const ctx = this._canvasContext;
         try {
 
         // **** YOUR CODE HERE ****
+            //clear entire canvas
+            ctx.clearRect(0, 0, this._owningCanvas.width, this._owningCanvas.height); 
+
+            //iterate through children
+            for (let ch : number = 0; ch < this._children.length; ch++) {
+                //saves drawing context 
+                let child = this._children[ch];
+                ctx.save();
+                ctx.translate(child.x, child.y);
+                //puts it in child coordinate system and draw
+                child.draw(ctx, true);
+                //restores the context 
+                ctx.restore();
+            }
 
         // currently, for ease of debugging, we let exceptions propogate out from this 
         // redraw (and typically all the out of our code).  this will basically shut 

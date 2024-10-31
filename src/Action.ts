@@ -84,6 +84,29 @@ export class Action {
         if (this._actType === 'none') return;
         
         // **** YOUR CODE HERE ****
+        switch(this._actType) {
+            case 'set_image' : {
+                //draws image for region
+                if (this.onRegion) {
+                    //console.log("new image!!", this._param);
+                    this.onRegion.imageLoc = this._param;
+                    //console.log(this.onRegion.image);
+                }
+            }
+            case 'clear_image' : {
+                //clears image for region
+                if (this.onRegion) {
+                    this.onRegion.imageLoc = "";
+                }
+
+            }
+            case 'print' : {
+                console.log(this._param);
+            }
+            case 'print_event' : {
+                console.log(this._param, evtType, evtReg?.debugString());
+            }
+        }
     }
 
      //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -93,6 +116,15 @@ export class Action {
     public bindRegion(regionList : readonly Region[]) : void {
             
         // **** YOUR CODE HERE ****
+        //loop through regionlist
+        for (let r : number = 0; r < regionList.length; r++) {
+            //see if region name is a match 
+            if (regionList[r].name === this._onRegionName) {
+                //set region to matching region object
+                this._onRegion = regionList[r];
+                return;
+            }
+        }
         
         // ok to have no matching region for some actions
         if (this.actType === 'none' || this.actType === 'print' || 

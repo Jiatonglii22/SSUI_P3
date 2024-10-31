@@ -90,9 +90,7 @@ export class Transition {
     public match(evtType : EventType, regn? : Region) : boolean {
            
         // **** YOUR CODE HERE ****
-
-        // **** Remove this, it's just here to get this file to compile
-        return false;
+        return this.onEvent.match(evtType, regn);
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -104,6 +102,14 @@ export class Transition {
     public bindTarget(stateList : readonly State[]) : void {
             
         // **** YOUR CODE HERE ****
+        //go through statelist
+        for (let s : number = 0; s < stateList.length; s++)
+            //if name matches target name
+            if (stateList[s].name === this._targetName) {
+                //set state as the target
+                this._target = stateList[s]; 
+                return;
+            }
 
         // no matching state name, so generate an error message
         Err.emit(`State '${this._targetName}' in transition does not match any state.`);

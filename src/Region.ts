@@ -93,6 +93,10 @@ export class Region {
     public set x(v : number) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._x)) {
+            this._x = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }
        
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -103,6 +107,10 @@ export class Region {
     public set y(v : number) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._y)) {
+            this._y = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }   
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -114,6 +122,10 @@ export class Region {
     public set w(v : number) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._w)) {
+            this._w = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }  
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -125,6 +137,10 @@ export class Region {
     public set h(v : number) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._h)) {
+            this._h = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }  
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -156,6 +172,10 @@ export class Region {
     public set parent(v : FSM | undefined) {
             
         // **** YOUR CODE HERE ****
+        if (!(v === this._parent)) {
+            this._parent = v; 
+            this.damage(); // want to declare damaged somehow
+        }
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -173,6 +193,7 @@ export class Region {
         if (v !== this._imageLoc) {
             this._imageLoc = v;
             this._startImageLoad();
+            //console.log(this.image);
         }
     }
 
@@ -219,6 +240,11 @@ export class Region {
     public pick(localX : number, localY : number) : boolean {
             
         // **** YOUR CODE HERE ****
+
+        if (localX >= this.x && localX <= this.x + this.w && 
+            localY >= this.y && localY <= this.y + this.h) {
+            return true;
+        }
         
         // **** Remove this, it's just here to make this compile as-is
         return false;
@@ -237,6 +263,7 @@ export class Region {
         if (this.loaded && !this.loadError && this.image) {
                
             // **** YOUR CODE HERE ****
+            ctx.drawImage(this.image, 0, 0);
 
         }
         
@@ -257,6 +284,9 @@ export class Region {
     public damage() {
             
         // **** YOUR CODE HERE ****
+        if (this._parent) {
+            this._parent.damage(); //eventually gets passed to Root
+        }
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
