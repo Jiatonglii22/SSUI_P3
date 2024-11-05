@@ -1,43 +1,62 @@
 {
     "regions": [
         {
-            "name": "redbutton", 
+            "name": "maze", 
             "x": 0, "y": 0, "w": -1, "h": -1, 
-            "imageLoc": "./images/redbutton.png"
+            "imageLoc": "./images/maze.png"
         }, 
         {
-            "name": "greenbutton",
-            "x": 0, "y": 0, "w": -1, "h": -1
+            "name": "dot", 
+            "x":20, "y": 20, "w": -1, "h": -1, 
+            "imageLoc": "./images/dot.png"
+        }, 
+        {
+            "name": "up", 
+            "x":80, "y": 220, "w": -1, "h": -1, 
+            "imageLoc": "./images/uparrow.png"
+        }, 
+        {
+            "name": "down", 
+            "x":80, "y": 300, "w": -1, "h": -1, 
+            "imageLoc": "./images/downarrow.png"
+        }, 
+        {
+            "name": "left", 
+            "x":20, "y": 260, "w": -1, "h": -1, 
+            "imageLoc": "./images/leftarrow.png"
+        }, 
+        {
+            "name": "right", 
+            "x":140, "y": 260, "w": -1, "h": -1, 
+            "imageLoc": "./images/rightarrow.png"
         }
     ], 
     "states": [
         {
-            "name" : "inactive",
-            "transitions" : [
+            "name" : "only_state",
+            "transitions": [
                 {
-                    "onEvent" : {"evtType" : "press", "region" : "redbutton"},
-                    "target" : "active",
-                    "actions" : [
-                        {"act": "clear_image", "region": "redbutton"},
-                        {"act": "set_image", "region": "greenbutton", "param": "./images/greenbutton.png"},
-                        {"act": "print_event", "param": "===>>"}
-                    ]
-                }
-            ] 
-        }, 
-        {
-            "name" : "active",
-            "transitions" : [
+                    "onEvent": {"evtType": "press", "region": "up"},
+                    "target": "only_state", 
+                    "actions": [{"act": "move_up", "param" : "===>"}]
+                }, 
                 {
-                    "onEvent" : {"evtType" : "press", "region" : "greenbutton"},
-                    "target" : "inactive",
-                    "actions" : [
-                        {"act": "clear_image", "region": "greenbutton"},
-                        {"act": "set_image", "region": "redbutton", "param": "./images/redbutton.png"},
-                        {"act": "print_event", "param": "===>>"}
-                    ]
+                    "onEvent": {"evtType": "press", "region": "down"},
+                    "target": "only_state", 
+                    "actions": [{"act": "move_down", "param" : "===>"}]
+                }, 
+                {
+                    "onEvent": {"evtType": "press", "region": "left"},
+                    "target": "only_state", 
+                    "actions": [{"act": "move_left", "param" : "===>"}]
+                }, 
+                {
+                    "onEvent": {"evtType": "press", "region": "right"},
+                    "target": "only_state", 
+                    "actions": [{"act": "move_right", "param" : "===>"}]
                 }
-            ] 
+
+            ]
         }
 
     ]

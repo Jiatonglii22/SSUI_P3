@@ -59,7 +59,7 @@ function test3() {
     fsmInt.startLoadFromJson("./fsm_json/stick.json");
 }
 function customtest() {
-    let fsmInt = new FSMInteractor(undefined, 100, 300);
+    let fsmInt = new FSMInteractor(undefined, 50, 300);
     root.addChild(fsmInt);
     fsmInt.startLoadFromJson("./fsm_json/customtest.json");
 }

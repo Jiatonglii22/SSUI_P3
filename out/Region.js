@@ -104,7 +104,6 @@ export class Region {
             this._imageLoc = v;
             this._startImageLoad();
             //console.log(this.image);
-            this.damage();
         }
     }
     get loaded() { return this._loaded; }

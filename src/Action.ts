@@ -22,8 +22,8 @@ import { Check } from "./Check.js";
 //===================================================================
 
 // A type for the actions we support, along with correponding strings
-export type ActionType = 'set_image' |  'clear_image' | 'none' | 'print' | 'print_event';
-const actionTypeStrings = ['set_image',  'clear_image', 'none', 'print', 'print_event'];
+export type ActionType = 'set_image' |  'clear_image' | 'none' | 'print' | 'print_event' | 'move_up' | 'move_down' | 'move_left' | 'move_right';
+const actionTypeStrings = ['set_image',  'clear_image', 'none', 'print', 'print_event', 'move_up', 'move_down', 'move_left', 'move_right'];
 
 // The type we are expecting to get back from decoding json for an Action
 export type Action_json = {act: ActionType, region: string, param: string};
@@ -38,6 +38,7 @@ export class Action {
         this._onRegionName = regionName ?? "";
         this._param = param ?? "";
         this._onRegion = undefined;  // will be established once we have the whole FSM
+        this._mainRegion = undefined;
     }
 
     // Construct an Action from an Action_json object.  We type check all the parts here
@@ -74,6 +75,10 @@ export class Action {
     protected _param : string;
     public get param() {return this._param;}
 
+    protected _mainRegion : Region | undefined; 
+    public get mainRegion() {return this._mainRegion;}
+
+
     //-------------------------------------------------------------------
     // Methods
     //-------------------------------------------------------------------
@@ -85,6 +90,26 @@ export class Action {
         
         // **** YOUR CODE HERE ****
         switch(this._actType) {
+            case 'move_up' : {
+                if (this._mainRegion) { 
+                    this._mainRegion.y -= 5;}
+                break;
+            }
+            case 'move_down' : {
+                if (this._mainRegion) { 
+                    this._mainRegion.y += 5;}
+                break;
+            }
+            case 'move_left' : {
+                if (this._mainRegion) { 
+                    this._mainRegion.x -= 5;}
+                break;
+            }
+            case 'move_right' : {
+                if (this._mainRegion) { 
+                    this._mainRegion.x += 5;}
+                break;
+            }
             case 'set_image' : {
                 //draws image for region
                 if (this.onRegion) {
@@ -92,19 +117,22 @@ export class Action {
                     this.onRegion.imageLoc = this._param;
                     //console.log(this.onRegion.image);
                 }
+                break;
             }
             case 'clear_image' : {
                 //clears image for region
                 if (this.onRegion) {
                     this.onRegion.imageLoc = "";
                 }
-
+                break;
             }
             case 'print' : {
                 console.log(this._param);
+                break;
             }
             case 'print_event' : {
                 console.log(this._param, evtType, evtReg?.debugString());
+                break;
             }
         }
     }
@@ -116,7 +144,15 @@ export class Action {
     public bindRegion(regionList : readonly Region[]) : void {
             
         // **** YOUR CODE HERE ****
-        //loop through regionlist
+        //find our main region for custom test
+        for (let r : number = 0; r < regionList.length; r++) {
+            //see if region name is a match 
+            if (regionList[r].name === "dot") {
+                this._mainRegion = regionList[r];
+            }
+        }
+
+        //loop through regionlist again to bind 
         for (let r : number = 0; r < regionList.length; r++) {
             //see if region name is a match 
             if (regionList[r].name === this._onRegionName) {
